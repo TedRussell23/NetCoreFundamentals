@@ -1,10 +1,12 @@
 ﻿using learningNetCore.Models;
 using learningNetCore.Services;
 using learningNetCore.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace learningNetCore.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private IRestuarantData _resturantData;
@@ -16,6 +18,8 @@ namespace learningNetCore.Controllers
             _greeter = greeter;
         }
         //Action Result : Doesn't retrn to client straight away
+
+        [AllowAnonymous]  //Overrides Authorize;
         public IActionResult Index()
         {
             //var model = _resturantData.GetAllRestaurants();
@@ -41,9 +45,13 @@ namespace learningNetCore.Controllers
             return View(model);
         }
 
+        //Authorize: can define policies such as isAdmin inCertainCountry etc.
         [HttpGet]
+        //[Authorize] used on the entire controller
         public IActionResult Create()
         {
+            //User property is inherited through the base controller class
+            //if(User.Identity.IsAuthenticated){} == [Authorize]
             return View();
         }
 

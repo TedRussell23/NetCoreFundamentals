@@ -1,16 +1,39 @@
 ﻿
 @{
     ViewData["Title"] = "Index";
+    ViewBag.Title = "Home Page";
 }
 
-@model learningNetCore.ViewModels.HomeIndexViewModel
+@model HomeIndexViewModel
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Pizza Places</title>
-</head>
-<body>
-<h1>@Model.CurrentMessage</h1>
+<h1>All Restaurants</h1>
+
+@foreach (var r in Model.Restaurants)
+{
+    @Html.Partial("_Summary", r) 
+}
+
+<div>
+    <a class="btn btn-primary" asp-action="Create">Add Restaurant</a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@{
+    /* Tables can be replaced using a model and a simple foreach loop
+
 <table>
     @foreach (var r in Model.Restaurants)
     {
@@ -18,15 +41,16 @@
             <td>@r.Id</td>
             <td>@r.Name</td>
             <td>
-                <a href="/home/details/@r.Id">Details</a>
-                @Html.ActionLink("Go", "Details", new {id = r.Id})
                 <a asp-action="Details" asp-route-id="@r.Id">More</a>
+                <a asp-page="/Restaurants/Edit" asp-route-id="@r.Id">Edit</a>
             </td>
 
         </tr>
     }
 </table>
-<a asp-action="Create">Add Restaurant</a>
-</body>
-</html>
+
+*/
+}
+
+
 

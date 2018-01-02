@@ -2,6 +2,7 @@
 using System.Linq;
 using learningNetCore.Data;
 using learningNetCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace learningNetCore.Services
 {
@@ -30,6 +31,13 @@ namespace learningNetCore.Services
             //Auto-Generated Entity Framework ID
             _context.Restaurants.Add(restaurant);
             //Issues SQL commands like the one above to the database? 
+            _context.SaveChanges();
+            return restaurant;
+        }
+
+        public Restaurant Update(Restaurant restaurant)
+        {
+            _context.Attach(restaurant).State = EntityState.Modified;
             _context.SaveChanges();
             return restaurant;
         }

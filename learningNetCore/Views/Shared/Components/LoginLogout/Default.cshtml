@@ -1,0 +1,29 @@
+﻿@using System.Security.Claims
+@{
+    var _Username = "";
+
+    foreach (var Id in User.Identities)
+    {
+        foreach (var claim in Id.Claims)
+        {
+            if (claim.Type.Equals(ClaimTypes.GivenName))
+            {
+                _Username += claim.Value;
+            }
+            if (claim.Type.Equals(ClaimTypes.Surname))
+            {
+                _Username += " " + claim.Value;
+            }
+        }
+    }
+
+    if(User.Identity.IsAuthenticated)
+    {
+        <div>Hello, @_Username</div>
+        <a class="btn btn-default" asp-controller="Account" asp-action="Logout">Logout</a>
+    }
+    else
+    {
+        <a class="btn btn-default" asp-controller="Account" asp-action="Login">Login</a>
+    }
+}

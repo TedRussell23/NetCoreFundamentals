@@ -1,8 +1,10 @@
 ﻿using learningNetCore.Data;
 using learningNetCore.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,9 +26,24 @@ namespace learningNetCore
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+            {
+                //Auth Scheme is how do we identify - this uses cookie scheme - token becomes a cookie
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                //Default challenege scheme: forces them to authenticate
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+
+            }).AddOpenIdConnect(options =>
+            {
+                //Framework is intelgent to bind these 
+                _configuration.Bind("AzureID", options);
+                //options.Authority; (AppSettings.Json has this information)
+                //options.ClientId;
+            }).AddCookie();
+
             services.AddSingleton<IGreeter, Greeter>();
             services.AddDbContext<learningNetCoreDbContext>(
-                options => options.UseSqlServer(_configuration.GetConnectionString("LocalDB")));
+                options => options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IRestuarantData, SqlRestaurantData>();
             services.AddMvc();
         }
@@ -41,14 +58,21 @@ namespace learningNetCore
                 app.UseDeveloperExceptionPage();         
             }
 
+            app.UseRewriter(new RewriteOptions().AddRedirectToHttpsPermanent());
+
             //app.UseFileServer();
             //app.UseDefaultFiles();
 
             app.UseStaticFiles();
 
+            app.UseNodeModules(env.ContentRootPath);
+
+            app.UseAuthentication();
+            //Will find the users ID for any middleware afterthis is called
+
             app.UseMvc(ConfigureRoutes);
 
-
+            /*
             app.Run(async (context) =>
             {
                 //var mGreeting = greeter.GetMessageOfTheDay();
@@ -57,6 +81,7 @@ namespace learningNetCore
             
                 //await context.Response.WriteAsync($"{mGreeting} : {env.EnvironmentName}");
             });
+            */
         }
 
         //Conventional based routing
@@ -68,9 +93,6 @@ namespace learningNetCore
         }
     }
 }
-
-
-
 
 
 //Place in Configure

@@ -1,5 +1,8 @@
-﻿@using learningNetCore.Models
-@model Restaurant
+﻿@model Restaurant
+
+    @{
+        ViewBag.Title = Model.Name;
+    }
     
 
 <h1>@Model.Name</h1>
